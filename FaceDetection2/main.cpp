@@ -13,6 +13,8 @@ using namespace cv;
 void FaceDetection( Mat frame );
 void drawFace(cv::Mat image, vector<Rect> *faces, int flag);
 void drawProfileFace(cv::Mat image, vector<Rect> *faces, int flag);
+//void ClippingAndDisplay(cv::Mat image, Rect);
+void ClippingAndDisplay(cv::Mat image, Rect);
 
 
 /**-------- Global variables --------**/
@@ -33,6 +35,7 @@ int main( int argc, char* argv[] )
 {
 	VideoCapture cap;
 	Mat frame;
+	Mat ROI;
 	int ImageMax = 48;
 	string fileName;
 	string WindowName = "Window - Face detection";
@@ -162,7 +165,7 @@ if( !profiles_cascade.load( profile_cascade_name ) ){ printf("--(!)Error loading
 
 
 /**
-* @function detect
+* @function FaceDetection
 */
 void FaceDetection(Mat frame)
 {
@@ -174,20 +177,26 @@ void FaceDetection(Mat frame)
 	/**-------- ŠçŒŸoˆ— --------**/
 	/* ³–ÊŠçŒŸo */
 	face_cascade.detectMultiScale( frame_gray, faces, 1.1, 2, 0|CV_HAAR_SCALE_IMAGE, Size(50, 50) );
-	//×ü‚Å•`‰æ
-	//drawFace(frame, &faces, 1);
-	//‘¾ü‚Å•`‰æ
-	drawFace(frame, &faces, 2);
+	if(faces.size() > 0)
+	{
+		//×ü‚Å•`‰æ
+		//drawFace(frame, &faces, 1);
+		//‘¾ü‚Å•`‰æ
+		drawFace(frame, &faces, 2);
+	}
 
 
 	/* ‰¡ŠçŒŸo */
 	std::vector<Rect> profiles;
 	Mat profiles_gray = frame_gray;
 	profiles_cascade.detectMultiScale( profiles_gray, profiles, 1.1, 2, 0 |CV_HAAR_SCALE_IMAGE, Size(50, 50) );
-	//×ü‚Å•`‰æ
-	//drawProfileFace(frame, &profiles, 1);
-	//‘¾ü‚Å•`‰æ
-	drawProfileFace(frame, &profiles, 2);
+	if(faces.size() > 0)
+	{
+		//×ü‚Å•`‰æ
+		//drawProfileFace(frame, &profiles, 1);
+		//‘¾ü‚Å•`‰æ
+		//drawProfileFace(frame, &profiles, 2);
+	}
 }
 
 
@@ -209,6 +218,14 @@ void drawFace(cv::Mat image, vector<Rect> *faces, int flag)
 			pt1.y = faces->at(i).y;
 			pt2.x = faces->at(i).x + faces->at(i).width - 1;
 			pt2.y = faces->at(i).y + faces->at(i).height - 1;
+
+			//ROIˆ—‚¨‚æ‚Ñ•Û‘¶
+			Rect rect1;
+			rect1.x =faces->at(i).x;
+			rect1.y = faces->at(i).y;
+			rect1.width = faces->at(i).width;
+			rect1.height = faces->at(i).height;
+			ClippingAndDisplay(image, rect1);
 
 			// ”’l‚©‚ç•¶š—ñ‚É•ÏŠ·
 			char c_str[256];
@@ -278,4 +295,18 @@ void drawProfileFace(cv::Mat image, vector<Rect> *faces, int flag)
 			// ”Ô†‚Ì•`‰æ
 			putText(image, c_str, number, FONT_HERSHEY_SIMPLEX, 0.8, Scalar(255, 0, 0), 2, 8, 0);
 	}
+}
+
+
+
+
+/**
+* @function ClippingAndDisplay
+*/
+void ClippingAndDisplay(Mat image, Rect rect)
+{
+		//Mat ROI(image, Rect(200,200,100,100));
+		Mat ROI(image, rect);
+		imwrite("clipped.jpg", ROI);
+		imshow("result_clipped", ROI);
 }
