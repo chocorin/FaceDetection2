@@ -113,7 +113,7 @@ if( !profiles_cascade.load( profile_cascade_name ) ){ printf("--(!)Error loading
 			}
 			outputfile.close();
 	#else
-		fName = "spe_2010_0127_obama_00014.jpg";
+		fName = "spe_2010_0127_obama_00013.jpg";
 		FileName = fName;
 		//fileName = "out00996.jpg";
 		cout << fName << endl;
@@ -481,13 +481,17 @@ void ClippingAndDisplay(Mat image, vector<Rect> *faces)
 	{
 		if(faces->at(i).width != -1)
 		{
-			// 検出した矩形の座標を格納
+			// 検出した矩形の座標を格納して領域を1.5倍に拡張する
 			Rect rect1;
 
-			rect1.x =faces->at(i).x;
-			rect1.y = faces->at(i).y;
-			rect1.width = faces->at(i).width;
-			rect1.height = faces->at(i).height;
+			rect1.x =(faces->at(i).x)-((((faces->at(i).width)*1.5)-(faces->at(i).width))/2);
+			//rect1.x =(faces->at(i).x);
+			//rect1.y = faces->at(i).y;
+			rect1.y = faces->at(i).y-((((faces->at(i).width)*1.5)-(faces->at(i).width))/2);
+			rect1.width = (faces->at(i).width)*1.5;
+			rect1.height = (faces->at(i).height)*1.5;
+			/*rect1.width = (faces->at(i).width);
+			rect1.height = (faces->at(i).height);*/
 
 
 			// 結果を出力するパスとファイル名格納する領域の確保
@@ -519,18 +523,18 @@ void ClippingAndDisplay(Mat image, vector<Rect> *faces)
 			sprintf(c_fpath_num, "%s\\%s", fPath.c_str(), num);
 			if(_mkdir(c_fpath_num) == 0)
 				cout << "Make directory_ImageNum" << endl;
-			sprintf(c_fpath, "%s\\%s\\%s%d", fPath.c_str(), num, "result_", i+1);
+			sprintf(c_fpath, "%s\\%s\\%s%d", fPath.c_str(), num, "result_1.5_", i+1);
 			if(_mkdir(c_fpath) == 0)
 				cout << "Make directory_resultNum" << endl;
 
 			// 結果のファイル名格納
-			sprintf(rclip, "%s\\%s\\%s%d\\%s%d.jpg", fPath.c_str(), num, "result_", i+1, "clipping_", i+1);
+			sprintf(rclip, "%s\\%s\\%s%d\\%s%d.jpg", fPath.c_str(), num, "result_1.5_", i+1, "clipping_", i+1);
 			printf("%s\n", rclip);
-			sprintf(near, "%s\\%s\\%s%d\\%s%d.jpg", fPath.c_str(), num, "result_", i+1, "resize_NEAREST_", i+1);
-			sprintf(linear, "%s\\%s\\%s%d\\%s%d.jpg", fPath.c_str(), num, "result_", i+1, "resize_LINEAR_", i+1);
-			sprintf(area, "%s\\%s\\%s%d\\%s%d.jpg", fPath.c_str(), num, "result_", i+1, "result_AREA_", i+1);
-			sprintf(cubic, "%s\\%s\\%s%d\\%s%d.jpg", fPath.c_str(), num, "result_", i+1, "result_CUBIC_", i+1);
-			sprintf(lanczos, "%s\\%s\\%s%d\\%s%d.jpg", fPath.c_str(), num, "result_", i+1, "result_LANCZOS4_", i+1);
+			sprintf(near, "%s\\%s\\%s%d\\%s%d.jpg", fPath.c_str(), num, "result_1.5_", i+1, "resize_NEAREST_", i+1);
+			sprintf(linear, "%s\\%s\\%s%d\\%s%d.jpg", fPath.c_str(), num, "result_1.5_", i+1, "resize_LINEAR_", i+1);
+			sprintf(area, "%s\\%s\\%s%d\\%s%d.jpg", fPath.c_str(), num, "result_1.5_", i+1, "result_AREA_", i+1);
+			sprintf(cubic, "%s\\%s\\%s%d\\%s%d.jpg", fPath.c_str(), num, "result_1.5_", i+1, "result_CUBIC_", i+1);
+			sprintf(lanczos, "%s\\%s\\%s%d\\%s%d.jpg", fPath.c_str(), num, "result_1.5_", i+1, "result_LANCZOS4_", i+1);
 
 
 			// 検出部の矩形の取り出し処理と拡大処理用のMat生成
