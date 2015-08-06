@@ -60,13 +60,13 @@ if( !profiles_cascade.load( profile_cascade_name ) ){ printf("--(!)Error loading
 	// 静止画像を格納しているディレクトリ名を指定
 	//string DirectoryName = "C:\\home\\komiya\\Head_pose_estimation\\movie\\president\\2_George_W_Bush\\samplings\\sampling_1minutes\\spe_2004_0120_bush";
 	//string DirectoryName = "C:\\home\\komiya\\Head_pose_estimation\\movie\\president\\processing";
-	string DirectoryName = "C:\\home\\komiya\\Head_pose_estimation\\movie\\president\\1_Obama\\samplings\\sampling_1minutes\\spe_2010_0127_obama";
+	string DirectoryName = "C:\\home\\komiya\\Head_pose_estimation\\data\\president\\1_Obama\\samplings\\sampling_1minutes\\spe_2010_0127_obama";
 	FileDirectoryPath = DirectoryName;
 
 	// 処理結果を格納するディレクトリ名を指定
 	//string ResultDirectoryName = "C:\\home\\komiya\\Head_pose_estimation\\movie\\president\\2_George_W_Bush\\samplings\\sampling_1minutes\\spe_2004_0120_bush\\result";
 	//string ResultDirectoryName = "C:\\home\\komiya\\Head_pose_estimation\\movie\\president\\processing\\result";
-	string ResultDirectoryName = "C:\\home\\komiya\\Head_pose_estimation\\movie\\president\\1_Obama\\samplings\\sampling_1minutes\\spe_2010_0127_obama\\result_2";
+	string ResultDirectoryName = "C:\\home\\komiya\\Head_pose_estimation\\data\\president\\1_Obama\\samplings\\sampling_1minutes\\spe_2010_0127_obama\\result_2";
 
 	// ファイル名を出力するためのテキストファイル名を指定
 	//ofstream outputfile("C:\\home\\komiya\\Head_pose_estimation\\movie\\president\\processing\\txt\\FileName.txt");
@@ -113,7 +113,7 @@ if( !profiles_cascade.load( profile_cascade_name ) ){ printf("--(!)Error loading
 			}
 			outputfile.close();
 	#else
-		fName = "spe_2010_0127_obama_00013.jpg";
+		fName = "spe_2010_0127_obama_00014.jpg";
 		FileName = fName;
 		//fileName = "out00996.jpg";
 		cout << fName << endl;
@@ -528,13 +528,13 @@ void ClippingAndDisplay(Mat image, vector<Rect> *faces)
 				cout << "Make directory_resultNum" << endl;
 
 			// 結果のファイル名格納
-			sprintf(rclip, "%s\\%s\\%s%d\\%s%d.jpg", fPath.c_str(), num, "result_1.5_", i+1, "clipping_", i+1);
-			printf("%s\n", rclip);
-			sprintf(near, "%s\\%s\\%s%d\\%s%d.jpg", fPath.c_str(), num, "result_1.5_", i+1, "resize_NEAREST_", i+1);
-			sprintf(linear, "%s\\%s\\%s%d\\%s%d.jpg", fPath.c_str(), num, "result_1.5_", i+1, "resize_LINEAR_", i+1);
-			sprintf(area, "%s\\%s\\%s%d\\%s%d.jpg", fPath.c_str(), num, "result_1.5_", i+1, "result_AREA_", i+1);
-			sprintf(cubic, "%s\\%s\\%s%d\\%s%d.jpg", fPath.c_str(), num, "result_1.5_", i+1, "result_CUBIC_", i+1);
-			sprintf(lanczos, "%s\\%s\\%s%d\\%s%d.jpg", fPath.c_str(), num, "result_1.5_", i+1, "result_LANCZOS4_", i+1);
+			//sprintf(rclip, "%s\\%s\\%s%d\\%s%s%d.jpg", fPath.c_str(), num, "result_1.5_", i+1, num, "_clipping_", i+1);
+			//printf("%s\n", rclip);
+			sprintf(near, "%s\\%s\\%s%d\\%s%s%d.jpg", fPath.c_str(), num, "result_1.5_", i+1, num, "_resize_NEAREST_", i+1);
+			sprintf(linear, "%s\\%s\\%s%d\\%s%s%d.jpg", fPath.c_str(), num, "result_1.5_", i+1, num, "_resize_LINEAR_", i+1);
+			sprintf(area, "%s\\%s\\%s%d\\%s%s%d.jpg", fPath.c_str(), num, "result_1.5_", i+1, num,"_result_AREA_", i+1);
+			sprintf(cubic, "%s\\%s\\%s%d\\%s%s%d.jpg", fPath.c_str(), num, "result_1.5_", i+1, num, "_result_CUBIC_", i+1);
+			sprintf(lanczos, "%s\\%s\\%s%d\\%s%s%d.jpg", fPath.c_str(), num, "result_1.5_", i+1,  num,"_result_LANCZOS4_", i+1);
 
 
 			// 検出部の矩形の取り出し処理と拡大処理用のMat生成
