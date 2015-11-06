@@ -1,13 +1,20 @@
+///////////////////////////////////////////////////////////////////////////////
+//
+// 画像の人物の顔検出し拡大処理するプログラム
+//
+//
+//
+///////////////////////////////////////////////////////////////////////////////
+
+
 #include "opencv2/objdetect/objdetect.hpp"
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
 
 #include <stdio.h>
 #include <string.h>
-#include <fstream>
+#include <iostream>
 #include <direct.h>
-
-#include "Dir.h"
 
 
 using namespace std;
@@ -17,6 +24,7 @@ using namespace cv;
 void FaceDetection( Mat frame );
 void drawFace(cv::Mat image, vector<Rect> *faces, int flag);
 void drawProfileFace(cv::Mat image, vector<Rect> *faces, int flag);
+//void ClippingAndDisplay(cv::Mat image, Rect);
 void ClippingAndDisplay(cv::Mat image, vector<Rect> *faces);
 void CutExtention(const char* cfName);
 
@@ -59,23 +67,22 @@ if( !profiles_cascade.load( profile_cascade_name ) ){ printf("--(!)Error loading
 #if 1
 	// 静止画像読み込み
 	// 静止画像を格納しているディレクトリ名を指定
-	//string DirectoryName = "C:\\home\\komiya\\Head_pose_estimation\\data\\president\\2_George_W_Bush\\samplings\\sampling_1minutes\\spe_2004_0120_bush";
-	string DirectoryName = "C:\\home\\komiya\\Head_pose_estimation\\data\\president\\processing";
-	//string DirectoryName = "C:\\home\\komiya\\Head_pose_estimation\\data\\president\\1_Obama\\samplings\\sampling_1minutes\\spe_2009_0604_obama";
-	//FileDirectoryPath = DirectoryName;
+	//string DirectoryName = "C:\\home\\komiya\\Head_pose_estimation\\movie\\president\\2_George_W_Bush\\samplings\\sampling_1minutes\\spe_2004_0120_bush";
+	string DirectoryName = "C:\\home\\komiya\\Head_pose_estimation\\data\\president\\processing\\ROI\\test";
+	//string DirectoryName = "C:\\home\\komiya\\Head_pose_estimation\\movie\\president\\1_Obama\\samplings\\sampling_1minutes\\spe_2010_0127_obama";
+	FileDirectoryPath = DirectoryName;
 
 	// 処理結果を格納するディレクトリ名を指定
 	//string ResultDirectoryName = "C:\\home\\komiya\\Head_pose_estimation\\movie\\president\\2_George_W_Bush\\samplings\\sampling_1minutes\\spe_2004_0120_bush\\result";
-	string ResultDirectoryName = "C:\\home\\komiya\\Head_pose_estimation\\data\\president\\processing\\ROI";
-	//string ResultDirectoryName = "C:\\home\\komiya\\Head_pose_estimation\\data\\president\\1_Obama\\samplings\\sampling_1minutes\\spe_2009_0604_obama\\ROI\\test";
-	FileDirectoryPath = ResultDirectoryName;
+	string ResultDirectoryName = "C:\\home\\komiya\\Head_pose_estimation\\data\\president\\processing\ROI\\test\\result";
+	//string ResultDirectoryName = "C:\\home\\komiya\\Head_pose_estimation\\movie\\president\\1_Obama\\samplings\\sampling_1minutes\\spe_2010_0127_obama\\result_2";
 
 	// ファイル名を出力するためのテキストファイル名を指定
-	//ofstream outputfile("C:\\home\\komiya\\Head_pose_estimation\\data\\president\\processing\\txt\\FileName.txt");
+	//ofstream outputfile("C:\\home\\komiya\\Head_pose_estimation\\movie\\president\\processing\\txt\\FileName.txt");
 	
 	
 	// ディレクトリ内のファイルを複数指定する場合はフラグ1、ファイル名を指定する場合はフラグ0
-	#if 1
+	#if 0
 		// ディレクトリ名からファイルリストを作成
 		vector<string> backfilelist = Dir::read(DirectoryName);
 		// 画像範囲を指定しない場合（ディレクトリ内全ファイルの出力をする場合）はフラグ1とする
@@ -86,10 +93,10 @@ if( !profiles_cascade.load( profile_cascade_name ) ){ printf("--(!)Error loading
 			// 静止画像No範囲指定
 			// 開始番号
 			//int BeginNum = 47;
-			int BeginNum = 18;
+			int BeginNum = 726;
 			// 終了番号
 			//int EndNum = 47;
-			int EndNum = 61;
+			int EndNum = 727;
 			// ファイル名出力
 			for(int i = BeginNum -1; i < EndNum; i++)
 		#endif
@@ -97,8 +104,7 @@ if( !profiles_cascade.load( profile_cascade_name ) ){ printf("--(!)Error loading
 				stringstream FilePath;
 				stringstream ResultFilePath;
 				cout << backfilelist[i] << endl;
-				FileName = backfilelist[i];
-				//outputfile << backfilelist[i] << endl;
+				outputfile << backfilelist[i] << endl;
 				FilePath << DirectoryName << "\\" << backfilelist[i];
 				ResultFilePath << ResultDirectoryName << "\\" << "result_" << backfilelist[i];
 				// （1）静止画像データをファイルから読み込む
@@ -109,15 +115,14 @@ if( !profiles_cascade.load( profile_cascade_name ) ){ printf("--(!)Error loading
 					return -1;
 				}
 				// （2）静止画像データの処理結果を表示する
-				FaceDetection(frame);
+				detectAndDisplay(frame);
 				imwrite(ResultFilePath.str(), frame);
-				//imshow(WindowName, frame);
 				//imshow(WindowName, frame);
 				//waitKey(100);
 			}
-			//outputfile.close();
+			outputfile.close();
 	#else
-		fName = "spe_2009_0604_obama_00014.jpg";
+		fName = "spe_1982_0126_reagan_00014.jpg";
 		FileName = fName;
 		//fileName = "out00996.jpg";
 		cout << fName << endl;
@@ -162,7 +167,6 @@ if( !profiles_cascade.load( profile_cascade_name ) ){ printf("--(!)Error loading
 			for(;;) {
 				// 動画像ファイルから1フレーム分の画像データを取得して、変数frameに格納する
 				cap >> frame;
-
 				// 画像データ取得に失敗したらループを抜ける
 				if (!frame.empty()) {
 					detectAndDisplay( frame );
@@ -170,12 +174,10 @@ if( !profiles_cascade.load( profile_cascade_name ) ){ printf("--(!)Error loading
 				}
 				else
 					break;
-
 				// 取得した画像データをウィンドウ表示する
 				if(waitKey(100) >= 0) break;
 			}
 		}
-
 #endif
 	return 0;
 }
@@ -488,74 +490,57 @@ void ClippingAndDisplay(Mat image, vector<Rect> *faces)
 			// 検出した矩形の座標を格納して領域を1.5倍に拡張する
 			Rect rect1;
 
-			rect1.x =(faces->at(i).x)-((((faces->at(i).width)*1.5)-(faces->at(i).width))/2);
-			/*if(rect1.x < 0)
-				break;*/
-			//rect1.x =(faces->at(i).x);
-			//rect1.y = faces->at(i).y;
-			rect1.y = faces->at(i).y-((((faces->at(i).width)*1.5)-(faces->at(i).width))/2);
-			/*if(rect1.y < 0)
-				break;*/
-			rect1.width = (faces->at(i).width)*1.5;
-			rect1.height = (faces->at(i).height)*1.5;
-			/*rect1.width = (faces->at(i).width);
-			rect1.height = (faces->at(i).height);*/
+			//rect1.x =(faces->at(i).x)-((((faces->at(i).width)*1.5)-(faces->at(i).width))/2);
+			rect1.x =(faces->at(i).x);
+			rect1.y = faces->at(i).y;
+			//rect1.y = faces->at(i).y-((((faces->at(i).width)*1.5)-(faces->at(i).width))/2);
+			//rect1.width = (faces->at(i).width)*1.5;
+			//rect1.height = (faces->at(i).height)*1.5;
+			rect1.width = (faces->at(i).width);
+			rect1.height = (faces->at(i).height);
 
 
 			// 結果を出力するパスとファイル名格納する領域の確保
 			char c_fpath_num[256];
 			char c_fpath[256];
-			//char rclip[256];
-			//char nearest[256];
-			char linear[256];
-			//char area[256];
-			//char cubic[256];
-			//char lanczos[256];
+			char rclip [256];
+			char near [256];
+			char linear [256];
+			char area [256];
+			char cubic [256];
+			char lanczos [256];
 
 			String fPath = FileDirectoryPath;
 			string fName = FileName;
 			
-			// 静止画像ファイル名から拡張子の取り出し
-			char *name, *num;
+			// 静止画像ファイル名から番号の取り出し
+			char *mem, *num;
 			char c_fname[256];
 			strcpy(c_fname, fName.c_str());
-			name = strtok(c_fname, ".");
-
-			//// 静止画像ファイル名から番号の取り出し
-			//char *mem, *num;
-			//char c_fname[256];
-			//strcpy(c_fname, fName.c_str());
-			//mem = strtok(c_fname, "_");
-			//for (int roop=0; roop < 3; roop++) 
-			//{
-   //             mem = strtok( NULL,"_" );
-			//}
-			//num =  strtok(NULL, "_");
-			//mem = strtok(num, ".");
+			mem = strtok(c_fname, "_");
+			for (int roop=0; roop < 3; roop++) 
+			{
+                mem = strtok( NULL,"_" );
+			}
+			num =  strtok(NULL, "_");
+			mem = strtok(num, ".");
 
 			// 結果を出力するディレクトリの作成
-			//sprintf(c_fpath_num, "%s\\%s", fPath.c_str(), num);
-			//if(_mkdir(c_fpath_num) == 0)
-			//	cout << "Make directory_ImageNum" << endl;
-			//sprintf(c_fpath, "%s\\%s\\%s%d", fPath.c_str(), num, "result_", i+1);
-			//if(_mkdir(c_fpath) == 0)
-			//	cout << "Make directory_resultNum" << endl;
+			sprintf(c_fpath_num, "%s\\%s", fPath.c_str(), num);
+			if(_mkdir(c_fpath_num) == 0)
+				cout << "Make directory_ImageNum" << endl;
+			sprintf(c_fpath, "%s\\%s\\%s%d", fPath.c_str(), num, "result_1.5_", i+1);
+			if(_mkdir(c_fpath) == 0)
+				cout << "Make directory_resultNum" << endl;
 
 			// 結果のファイル名格納
-			//sprintf(rclip, "%s\\%s\\%s%d\\%s%s%d.jpg", fPath.c_str(), num, "result_1.5_", i+1, num, "_clipping_", i+1);
-			//printf("%s\n", rclip);
-			//sprintf(nearest, "%s\\%s\\%s%d%s.jpg", fPath.c_str(), "result", num, i+1, "_resize_NEAREST");
-			//sprintf(linear, "%s\\%s\\%s%s%s%s%d%s.jpg", fPath.c_str(), "result", fName.c_str(), "_", num, "_", i+1, "_resize_LINEAR");
-			sprintf(linear, "%s\\%s\\%s%s%d%s.jpg", fPath.c_str(), "result", name, "_", i+1, "_resize_LINEAR");
-			//printf("%s\n", linear);
-			//sprintf(area, "%s\\%s\\%s%d%s.jpg", fPath.c_str(), "result", num, i+1, "_result_AREA");
-			//sprintf(cubic, "%s\\%s\\%s%d%s.jpg", fPath.c_str(), "result", num, i+1, "_result_CUBIC");
-			//sprintf(lanczos, "%s\\%s\\%s%d%s.jpg", fPath.c_str(), "result", num, i+1, "_result_LANCZOS4");
-			/*sprintf(nearest, "%s\\%s\\%s%d\\%s%s%d.jpg", fPath.c_str(), num, "result_", i+1, num, "_resize_NEAREST_", i+1);
-			sprintf(linear, "%s\\%s\\%s%d\\%s%s%d.jpg", fPath.c_str(), num, "result_", i+1, num, "_resize_LINEAR_", i+1);
-			sprintf(area, "%s\\%s\\%s%d\\%s%s%d.jpg", fPath.c_str(), num, "result_", i+1, num,"_result_AREA_", i+1);
-			sprintf(cubic, "%s\\%s\\%s%d\\%s%s%d.jpg", fPath.c_str(), num, "result_", i+1, num, "_result_CUBIC_", i+1);
-			sprintf(lanczos, "%s\\%s\\%s%d\\%s%s%d.jpg", fPath.c_str(), num, "result_", i+1,  num,"_result_LANCZOS4_", i+1);*/
+			sprintf(rclip, "%s\\%s\\%s%d\\%s%d.jpg", fPath.c_str(), num, "result_1.5_", i+1, "clipping_", i+1);
+			printf("%s\n", rclip);
+			sprintf(near, "%s\\%s\\%s%d\\%s%d.jpg", fPath.c_str(), num, "result_1.5_", i+1, "resize_NEAREST_", i+1);
+			sprintf(linear, "%s\\%s\\%s%d\\%s%d.jpg", fPath.c_str(), num, "result_1.5_", i+1, "resize_LINEAR_", i+1);
+			sprintf(area, "%s\\%s\\%s%d\\%s%d.jpg", fPath.c_str(), num, "result_1.5_", i+1, "result_AREA_", i+1);
+			sprintf(cubic, "%s\\%s\\%s%d\\%s%d.jpg", fPath.c_str(), num, "result_1.5_", i+1, "result_CUBIC_", i+1);
+			sprintf(lanczos, "%s\\%s\\%s%d\\%s%d.jpg", fPath.c_str(), num, "result_1.5_", i+1, "result_LANCZOS4_", i+1);
 
 
 			// 検出部の矩形の取り出し処理と拡大処理用のMat生成
@@ -563,20 +548,20 @@ void ClippingAndDisplay(Mat image, vector<Rect> *faces)
 			Mat dst(Size(200, 200), CV_8U, Scalar::all(0));
 
 			// 矩形取り出し処理結果書き出し
-			//imwrite(rclip, ROI);
-			//imshow(rclip, ROI);
+			imwrite(rclip, ROI);
+			imshow(rclip, ROI);
 
 			// 拡大処理及び処理結果書き出し
 			//resize(ROI, dst, dst.size(), 0, 0, INTER_NEAREST);
-			//imwrite(nearest, dst);
-			resize(ROI, dst, dst.size(), 0, 0, INTER_LINEAR);
-			imwrite(linear, dst);
-			/*resize(ROI, dst, dst.size(), 0, 0, INTER_AREA);
-			imwrite(area, dst);
-			resize(ROI, dst, dst.size(), 0, 0, INTER_CUBIC);
-			imwrite(cubic, dst);
-			resize(ROI, dst, dst.size(), 0, 0, INTER_LANCZOS4);
-			imwrite(lanczos, dst);*/
+			//imwrite(near, dst);
+			//resize(ROI, dst, dst.size(), 0, 0, INTER_LINEAR);
+			//imwrite(linear, dst);
+			//resize(ROI, dst, dst.size(), 0, 0, INTER_AREA);
+			//imwrite(area, dst);
+			//resize(ROI, dst, dst.size(), 0, 0, INTER_CUBIC);
+			//imwrite(cubic, dst);
+			//resize(ROI, dst, dst.size(), 0, 0, INTER_LANCZOS4);
+			//imwrite(lanczos, dst);
 		}
 	}
 }
